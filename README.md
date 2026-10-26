@@ -32,6 +32,8 @@ ${ISAAC_SIM_PATH:-$HOME/isaacsim}/sim/open_gaussian.sh \
   /absolute/path/to/data/gaussian/my-world/stage/view.usda
 ```
 
+![Isaac Sim rendering of converted Marble indoor house (500k)](docs/assets/isaac-indoor-house-500k.png)
+
 Open `view.usda`, not `default.usda`.
 
 ## Other commands
