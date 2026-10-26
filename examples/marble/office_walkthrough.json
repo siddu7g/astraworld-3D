@@ -1,0 +1,10 @@
+{
+  "prompt": "Walkable office interior under renovation with open-plan desks, glass meeting rooms, cables, tools, debris, and realistic daylight",
+  "region": "generic",
+  "display_name": "Office Walkthrough Showcase",
+  "mood": "soft daytime realism",
+  "must_include": ["open office", "glass meeting rooms", "tools", "walkable corridors"],
+  "avoid": ["fantasy", "warehouse", "residential home"],
+  "seed": 19,
+  "tags": ["office", "indoor", "walkthrough", "showcase"]
+}

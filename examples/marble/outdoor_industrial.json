@@ -1,0 +1,10 @@
+{
+  "prompt": "Outdoor industrial yard with stacked containers, service roads, forklifts, puddles, chain-link fencing, and cloudy afternoon light",
+  "region": "generic",
+  "display_name": "Industrial Yard Showcase",
+  "mood": "overcast cinematic realism",
+  "must_include": ["forklifts", "containers", "puddles", "roads"],
+  "avoid": ["fantasy", "dense city skyline", "crowds"],
+  "seed": 11,
+  "tags": ["industrial", "outdoor", "yard", "showcase"]
+}

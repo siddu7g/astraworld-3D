@@ -1,4 +1,4 @@
-"""CLI: Local USD + Marble LookAgent showcase pipeline."""
+"""CLI for WorldForge-3D workflows."""
 
 from __future__ import annotations
 
@@ -165,33 +165,44 @@ def cmd_export(args: argparse.Namespace) -> int:
     return 0 if result.get("exports") else 1
 
 
-def cmd_marble_to_isaac(args: argparse.Namespace) -> int:
-    from isaac_ready import build_open_command, convert_ply_to_isaac_stage
+def cmd_to_isaac(args: argparse.Namespace) -> int:
+    """Convert any Marble world_id or any compatible Gaussian PLY into Isaac view.usda."""
+    from isaac_ready import to_isaac
 
-    out_dir = Path(args.out_dir) if args.out_dir else (_data_dir() / "gaussian" / (args.scene_name or Path(args.ply).stem))
+    if bool(args.ply) == bool(getattr(args, "world_id", None)):
+        print("Provide exactly one of --ply or --world-id", file=sys.stderr)
+        return 2
+
     try:
-        view_usda = convert_ply_to_isaac_stage(
-            Path(args.ply),
-            out_dir=out_dir,
-            profile_name=args.profile,
+        result = to_isaac(
+            ply=args.ply,
+            world_id=getattr(args, "world_id", None),
+            profile=args.profile,
             scene_name=args.scene_name,
+            out_dir=args.out_dir,
+            resolution=getattr(args, "resolution", "full_res"),
+            export_mesh=getattr(args, "export_mesh", False),
+            data_dir=_data_dir(),
         )
     except Exception as e:
         print(f"error: {e}", file=sys.stderr)
         return 1
 
-    print(f"out_dir:   {out_dir}")
-    print(f"view_usda: {view_usda}")
+    print(f"source:         {result.source_ply}")
+    print(f"profile:        {result.profile}")
+    print(f"gaussian_count: {result.gaussian_count}")
+    print(f"out_dir:        {result.out_dir}")
+    print(f"view_usda:      {result.view_usda}")
     print("open in Isaac:")
-    print(f"  {build_open_command(view_usda)}")
+    print(f"  {result.open_command}")
     return 0
 
 
 def build_parser() -> argparse.ArgumentParser:
-    p = argparse.ArgumentParser(prog="python -m apps.api.cli", description="Agentic world builder CLI")
+    p = argparse.ArgumentParser(prog="worldforge", description="WorldForge-3D CLI")
     sub = p.add_subparsers(dest="command", required=True)
 
-    g = sub.add_parser("generate", help="Local pipeline → layered site.usd")
+    g = sub.add_parser("generate", help="Local pipeline -> layered site.usd")
     g.add_argument("--spec", type=str, default=None)
     g.add_argument("--region", default="americas", choices=["asia", "europe", "americas"])
     g.add_argument("--seed", type=int, default=42)
@@ -201,7 +212,7 @@ def build_parser() -> argparse.ArgumentParser:
     g.add_argument("--no-scaffolding", action="store_true")
     g.set_defaults(func=cmd_generate_local)
 
-    w = sub.add_parser("world", help="One-shot LookAgent → single Marble world (full quality)")
+    w = sub.add_parser("world", help="One-shot LookAgent -> single Marble world")
     w.add_argument("--prompt", type=str, default=None, help="Natural language world brief")
     w.add_argument("--brief", type=str, default=None, help="Path to WorldBrief JSON")
     w.add_argument("--name", type=str, default=None, help="Display name (max 64)")
@@ -237,17 +248,51 @@ def build_parser() -> argparse.ArgumentParser:
     e.add_argument("--export-mesh", action="store_true")
     e.set_defaults(func=cmd_export)
 
-    m = sub.add_parser("marble-to-isaac", help="Convert Marble PLY export into an Isaac-openable NuRec stage")
-    m.add_argument("--ply", required=True, help="Path to Marble/World Labs PLY export")
-    m.add_argument(
-        "--profile",
-        default="fullish",
-        choices=["100k", "fullish", "500k"],
-        help="Sanitize/downsample profile",
+    def _add_to_isaac_args(parser: argparse.ArgumentParser, *, with_world_id: bool) -> None:
+        parser.add_argument(
+            "--ply",
+            default=None,
+            help="Path to any Gaussian splat PLY (Marble or other 3DGS export)",
+        )
+        if with_world_id:
+            parser.add_argument(
+                "--world-id",
+                default=None,
+                help="Marble / World Labs world id (export PLY then convert)",
+            )
+            parser.add_argument(
+                "--resolution",
+                default="full_res",
+                choices=["100k", "500k", "full_res"],
+                help="PLY export resolution when using --world-id",
+            )
+            parser.add_argument(
+                "--export-mesh",
+                action="store_true",
+                help="Also export Marble GLB collider mesh when using --world-id",
+            )
+        parser.add_argument(
+            "--profile",
+            default="fullish",
+            choices=["100k", "fullish", "500k"],
+            help="Sanitize/downsample profile",
+        )
+        parser.add_argument("--out-dir", default=None, help="Output directory (default under APP_DATA_DIR/gaussian)")
+        parser.add_argument("--scene-name", default=None, help="Optional scene name for generated files")
+        parser.set_defaults(func=cmd_to_isaac)
+
+    t = sub.add_parser(
+        "to-isaac",
+        help="Convert any Marble world_id or any Gaussian PLY into an Isaac-openable stage",
     )
-    m.add_argument("--out-dir", default=None, help="Output directory (default under APP_DATA_DIR/gaussian)")
-    m.add_argument("--scene-name", default=None, help="Optional scene name for generated files")
-    m.set_defaults(func=cmd_marble_to_isaac)
+    _add_to_isaac_args(t, with_world_id=True)
+
+    # Alias kept for existing docs / muscle memory
+    m = sub.add_parser(
+        "marble-to-isaac",
+        help="Alias for to-isaac (PLY or world-id -> Isaac)",
+    )
+    _add_to_isaac_args(m, with_world_id=True)
 
     c = sub.add_parser("credits", help="Show Marble API remaining credits")
     c.set_defaults(func=cmd_credits)

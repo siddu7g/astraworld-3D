@@ -1,0 +1,10 @@
+{
+  "prompt": "Walkable indoor renovation environment with exposed framing, tools, cords, ladders, and soft daylight from side windows",
+  "region": "generic",
+  "display_name": "Indoor Renovation Showcase",
+  "mood": "clean natural daylight",
+  "must_include": ["framing", "construction tools", "walkable rooms"],
+  "avoid": ["fantasy", "outdoor scene", "night"],
+  "seed": 7,
+  "tags": ["indoor", "renovation", "walkthrough", "showcase"]
+}

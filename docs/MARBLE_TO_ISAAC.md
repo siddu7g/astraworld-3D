@@ -9,7 +9,7 @@ This repo supports two paths:
 
 - Linux
 - NVIDIA GPU
-- Isaac Sim installed at `ISAAC_SIM_PATH` (default: `/home/sidg/isaacsim`)
+- Isaac Sim installed at `ISAAC_SIM_PATH` (default: `~/isaacsim`)
 - World Labs / Marble API key in `.env` if you want to generate worlds from this repo
 
 ## Why This Guide Exists
@@ -24,11 +24,25 @@ This repo bakes in the fixes that worked in practice.
 
 ## End-To-End
 
-### 1. Generate a world
+### Fast path: any Marble world_id
+
+```bash
+worldforge to-isaac --world-id <marble_world_id> --resolution full_res --profile fullish
+```
+
+### Or: any local Gaussian PLY
+
+```bash
+worldforge to-isaac --ply /path/to/any_world.ply --profile fullish --scene-name my-world
+```
+
+Works for Marble downloads and other binary little-endian 3DGS PLYs.
+
+### 1. Generate a world (optional)
 
 ```bash
 source .venv/bin/activate
-python -m apps.api.cli world \
+worldforge world \
   --prompt "Indoor house under construction, walkable rooms, exposed studs" \
   --name "Indoor House" \
   --region americas \
@@ -40,7 +54,7 @@ This writes a Marble PLY under `data/worlds/.../exports/`.
 ### 2. Convert PLY to Isaac stage
 
 ```bash
-python -m apps.api.cli marble-to-isaac \
+worldforge to-isaac \
   --ply /path/to/world_full_res.ply \
   --profile fullish
 ```
@@ -67,7 +81,7 @@ data/gaussian/<scene-name>/
 ### 3. Open the fixed stage
 
 ```bash
-/home/sidg/isaacsim/sim/open_gaussian.sh \
+${ISAAC_SIM_PATH:-$HOME/isaacsim}/sim/open_gaussian.sh \
   /absolute/path/to/data/gaussian/<scene-name>/stage/view.usda
 ```
 

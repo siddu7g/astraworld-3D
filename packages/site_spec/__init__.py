@@ -1,4 +1,4 @@
-"""SiteSpec contract for the Agentic Construction Site Builder."""
+"""SiteSpec contract for the Local structured-scene workflow."""
 
 from site_spec.models import SiteSpec
 

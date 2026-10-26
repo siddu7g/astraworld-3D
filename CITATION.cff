@@ -1,0 +1,18 @@
+cff-version: 1.2.0
+title: WorldForge-3D
+message: Please cite WorldForge-3D using this metadata.
+type: software
+authors:
+  - family-names: G
+    given-names: Siddu
+repository-code: https://github.com/siddu7g/worldforge-3D
+url: https://github.com/siddu7g/worldforge-3D
+license: MIT
+version: 0.1.0
+abstract: Open-source tooling for generating showcase 3D worlds with World Labs Marble and moving them into OpenUSD and NVIDIA Isaac Sim.
+keywords:
+  - openusd
+  - isaac-sim
+  - world-generation
+  - gaussian-splatting
+  - marble

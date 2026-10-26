@@ -1,147 +1,77 @@
 # WorldForge-3D
 
-Open-source reference for building showcase 3D worlds with World Labs Marble and moving them into NVIDIA Isaac Sim.
+Generate showcase 3D worlds with World Labs Marble and open them in NVIDIA Isaac Sim.
 
-Two supported paths:
+Convert **any Marble world** (by `world_id`) or **any compatible Gaussian PLY** into an Isaac-ready `view.usda`.
 
-- `Marble -> Isaac`: the showcase path
-- `Local USD`: deterministic structured-world scaffold for Isaac
-
-## What This Repo Does
-
-### 1. One-shot Marble world generation
-
-`brief -> PromptSmith -> Critic -> one Marble call -> export`
-
-### 2. Local deterministic USD generation
-
-`SiteSpec -> LayoutComposer -> layered USD -> SimQA stub`
-
-### 3. Marble PLY to Isaac conversion
-
-This repo now includes the fixes needed to make Marble splat exports open reliably in Isaac:
-
-- sanitize bad PLY opacity values
-- run bundled `3dgrut`
-- extract the USDZ
-- write a stable `view.usda`
-
-## Quick Start
+## Quickstart
 
 ```bash
-cd /home/sidg/3D
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -e .
 cp .env.example .env
 ```
 
-Add your own keys to `.env`:
+```bash
+MARBLE_API_KEY=your_key          # for world / export / --world-id
+ISAAC_SIM_PATH=~/isaacsim        # for to-isaac
+```
+
+## Convert any world → Isaac
 
 ```bash
-MARBLE_API_KEY=your_world_labs_api_key
-OPENROUTER_API_KEY=your_openrouter_key   # optional
+# From a Marble world id (any Marble model / any scene)
+worldforge to-isaac --world-id <marble_world_id> --resolution full_res --profile fullish
+
+# From any local Gaussian PLY (Marble download or other 3DGS tools)
+worldforge to-isaac --ply /path/to/world.ply --profile fullish --scene-name my-world
+
+# Open the result
+${ISAAC_SIM_PATH:-$HOME/isaacsim}/sim/open_gaussian.sh \
+  /absolute/path/to/data/gaussian/my-world/stage/view.usda
 ```
 
-Get the Marble API key from [platform.worldlabs.ai/api-keys](https://platform.worldlabs.ai/api-keys).  
-Buy API credits at [platform.worldlabs.ai/billing](https://platform.worldlabs.ai/billing).
+Open `view.usda`, not `default.usda`.
 
-## Main Commands
-
-### Check credits
+## Other commands
 
 ```bash
-python -m apps.api.cli credits
+worldforge credits
+worldforge world --prompt "Indoor renovation with soft daylight" --name "Renovation" --seed 7
+worldforge export --world-id <id> --resolution full_res
+worldforge generate --spec examples/local/construction_basic.json
 ```
 
-### Generate a Marble world
+## Python API
 
-```bash
-python -m apps.api.cli world \
-  --prompt "Walkable indoor environment with exposed framing, tools, debris, and natural light" \
-  --name "Indoor Build World" \
-  --region americas \
-  --seed 7
+```python
+from isaac_ready import to_isaac
+
+result = to_isaac(ply="world.ply", profile="fullish")
+# or: to_isaac(world_id="<id>", resolution="full_res")
+print(result.view_usda)
+print(result.open_command)
 ```
 
-### Re-export a world's PLY or GLB
+See [docs/API.md](docs/API.md).
 
-```bash
-python -m apps.api.cli export \
-  --world-id <world_id> \
-  --resolution full_res
-```
+## Profiles
 
-### Convert a Marble PLY into an Isaac-openable stage
-
-```bash
-python -m apps.api.cli marble-to-isaac \
-  --ply /path/to/world_full_res.ply \
-  --profile fullish \
-  --scene-name indoor-house
-```
-
-Then open the generated `view.usda` in Isaac:
-
-```bash
-/home/sidg/isaacsim/sim/open_gaussian.sh \
-  /absolute/path/to/data/gaussian/indoor-house/stage/view.usda
-```
-
-### Generate the Local USD scaffold
-
-```bash
-python -m apps.api.cli generate --spec examples/americas_s42.json
-```
-
-Today the Local USD pack is construction-first. The Marble generation and Marble-to-Isaac pipeline are the more general building blocks for other world types.
-
-## Profiles For Isaac Conversion
-
-- `100k`: safest
-- `fullish`: best default on RTX 4070 laptop-class GPUs
-- `500k`: densest, heaviest
-
-## Output Layout
-
-### Marble generation
-
-```text
-data/worlds/<job_id>/
-  brief.json
-  prompts.json
-  drafts.json
-  look_report.json
-  exports/
-    world_<resolution>.ply
-    world_mesh.glb          # optional
-```
-
-### Marble to Isaac conversion
-
-```text
-data/gaussian/<scene-name>/
-  <scene-name>.ply
-  <scene-name>.usdz
-  conversion_summary.txt
-  stage/
-    default.usda
-    gauss.usda
-    <scene-name>.nurec
-    view.usda
-```
-
-Open `stage/view.usda`, not `default.usda`.
-
-## Isaac Notes
-
-- Isaac Sim is expected at `ISAAC_SIM_PATH` in `.env`
-- the launcher must pass `--/UJITSO/geometry=true`
-- Marble's web viewer will still look better than Isaac NuRec
-- splats are a showcase/render path, not a perfect mesh reconstruction path
+| Profile | Use when |
+| --- | --- |
+| `100k` | Safer / lighter GPUs |
+| `fullish` | Default on RTX 4070-class |
+| `500k` | Highest density |
 
 ## Docs
 
-- Spec: `docs/AGENTIC_BUILDER_SPEC.md`
-- Marble to Isaac guide: `docs/MARBLE_TO_ISAAC.md`
-- Agent instructions: `AGENTS.md`
+- [API](docs/API.md)
+- [Marble → Isaac](docs/MARBLE_TO_ISAAC.md)
+- [CLI](docs/CLI.md)
+- [Quickstart](docs/QUICKSTART.md)
+- [FAQ](docs/FAQ.md)
+
+## License
+
+MIT. Generated Marble assets follow World Labs terms.

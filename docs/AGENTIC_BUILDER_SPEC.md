@@ -1,8 +1,17 @@
 # Agentic Construction Site Builder — Spec (Draft v0)
 
-**Product spine:** Regional construction sites → Isaac-ready USD  
-**Secondary surface:** Marble look / demo worlds (credit-gated)  
-**Host:** Linux 24.04 · NVIDIA RTX 4070 · Isaac Sim at `~/isaacsim` (5.1)
+This document is a roadmap/spec artifact, not a complete statement of what the repository currently ships today.
+
+For the current supported workflows, start with:
+
+- `README.md`
+- `docs/QUICKSTART.md`
+- `docs/CLI.md`
+- `docs/MARBLE_TO_ISAAC.md`
+
+**Original product spine:** Regional construction sites -> Isaac-ready USD  
+**Current broader repo surface:** Marble showcase worlds -> OpenUSD / Isaac bridge  
+**Host used during development:** Linux 24.04 · NVIDIA RTX 4070 · Isaac Sim at `~/isaacsim` (5.1)
 
 ---
 
@@ -253,7 +262,7 @@ Do not use Marble as the definition of a construction site for the product path.
 ```
 3D/
   docs/AGENTIC_BUILDER_SPEC.md    # this file
-  prompts/START_BUILD.md          # agent kickoff prompt
+  docs/prompts/START_BUILD.md     # agent kickoff prompt
   .env.example
   apps/
     api/                          # FastAPI

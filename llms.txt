@@ -1,0 +1,21 @@
+# WorldForge-3D
+
+WorldForge-3D is an open-source CLI for generating showcase 3D worlds with World Labs Marble and moving them into OpenUSD and NVIDIA Isaac Sim.
+
+Primary workflow:
+- prompt -> Marble world -> PLY export -> Isaac-openable `view.usda`
+
+Secondary workflow:
+- `SiteSpec` -> deterministic layered USD scaffold
+
+Best entry points:
+- `README.md`
+- `docs/QUICKSTART.md`
+- `docs/CLI.md`
+- `docs/MARBLE_TO_ISAAC.md`
+- `AGENTS.md`
+
+Important constraints:
+- `Local USD` is a deterministic scaffold, not a photoreal pipeline
+- open `view.usda`, not `default.usda`
+- Marble web PLY exports may need sanitization before Isaac conversion

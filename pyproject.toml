@@ -3,9 +3,9 @@ requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "agentic-builder"
+name = "worldforge-3d"
 version = "0.1.0"
-description = "Agentic Construction Site Builder — Local USD pipeline"
+description = "Open-source 3D world generation bridge for Marble, OpenUSD, and Isaac Sim"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
@@ -20,7 +20,13 @@ dependencies = [
 [project.optional-dependencies]
 dev = ["pytest>=8.0"]
 
+[project.urls]
+Homepage = "https://github.com/siddu7g/worldforge-3D"
+Repository = "https://github.com/siddu7g/worldforge-3D"
+Issues = "https://github.com/siddu7g/worldforge-3D/issues"
+
 [project.scripts]
+worldforge = "apps.api.cli:main"
 site-generate = "apps.api.cli:main"
 
 [tool.setuptools.packages.find]
@@ -39,3 +45,6 @@ include = [
 
 [tool.setuptools.package-data]
 asset_registry = ["py.typed"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
